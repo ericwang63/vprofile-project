@@ -44,18 +44,20 @@ pipeline {
         stage('Sonar Analysis') {
             environment {
                 scannerHome = tool "${SONARSCANNER}"
+                // Add this line to handle the Java 17+ encapsulation issue
+                SONAR_SCANNER_OPTS = "--add-opens java.base/java.lang=ALL-UNNAMED"
             }
             steps {
-               withSonarQubeEnv("${SONARSERVER}") {
-                   sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=vprofile \
-                   -Dsonar.projectName=vprofile \
-                   -Dsonar.projectVersion=1.0 \
-                   -Dsonar.sources=src/ \
-                   -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
-                   -Dsonar.junit.reportsPath=target/surefire-reports/ \
-                   -Dsonar.jacoco.reportsPath=target/jacoco.exec \
-                   -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
-              }
+                withSonarQubeEnv("${SONARSERVER}") {
+                    sh '''${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=vprofile \
+                    -Dsonar.projectName=vprofile \
+                    -Dsonar.projectVersion=1.0 \
+                    -Dsonar.sources=src/ \
+                    -Dsonar.java.binaries=target/test-classes/com/visualpathit/account/controllerTest/ \
+                    -Dsonar.junit.reportsPath=target/surefire-reports/ \
+                    -Dsonar.jacoco.reportsPath=target/jacoco.exec \
+                    -Dsonar.java.checkstyle.reportPaths=target/checkstyle-result.xml'''
+                }
             }
         }
     }
