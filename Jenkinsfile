@@ -62,32 +62,12 @@ pipeline {
         }
         stage("Quality Gate") {
             steps {
-                script {
-                    timeout(time: 5, unit: 'MINUTES') {
-                        // Wait for Quality Gate result
-                        def qualityGate = waitForQualityGate abortPipeline: true
-                        echo "Quality Gate status: ${qualityGate.status}"
-                    }
-
-                    // Fetch issues from SonarQube API (replace sonarserver and token)
-                    def issuesJson = sh(
-                        script: """
-                            curl -s -u admin:your_token \
-                            "http://sonar.veeam.sc.local:9000/api/issues/search?componentKeys=vprofile"
-                        """,
-                        returnStdout: true
-                    ).trim()
-
-                    // Print raw JSON or parse it
-                    echo "SonarQube Issues: ${issuesJson}"
-
-                    // Optional: parse JSON to show summary
-                    def issues = readJSON text: issuesJson
-                    echo "Total issues found: ${issues.total}"
-                    issues.issues.each { issue ->
-                        echo "File: ${issue.component}, Line: ${issue.line}, Type: ${issue.type}, Message: ${issue.message}"
-                    }
+                timeout(time: 5, unit: 'MINUTES') {
+                    // Parameter indicates whether to set pipeline to UNSTABLE if Quality Gate fails
+                    // true = set pipeline to UNSTABLE, false = don't
+                    waitForQualityGate abortPipeline: true
                 }
+                
             }
         }
         stage("UploadArtifact"){
