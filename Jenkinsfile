@@ -73,7 +73,7 @@ pipeline {
                     def issuesJson = sh(
                         script: """
                             curl -s -u admin:your_token \
-                            "http://sonarserver:9000/api/issues/search?componentKeys=vprofile"
+                            "http://sonar.veeam.sc.local:9000/api/issues/search?componentKeys=vprofile"
                         """,
                         returnStdout: true
                     ).trim()
